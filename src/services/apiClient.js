@@ -82,7 +82,12 @@ export async function apiRequest(path, options = {}) {
     }
 
     if (!response.ok) {
-      if (response.status === 401 && requiresAuth && accessToken) {
+      if (
+        response.status === 401
+        && requiresAuth
+        && accessToken
+        && options.logoutOnUnauthorized !== false
+      ) {
         unauthorizedHandler?.();
       }
 
