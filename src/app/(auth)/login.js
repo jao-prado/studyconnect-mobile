@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -85,8 +85,14 @@ export default function LoginScreen() {
                 secureTextEntry
                 value={senha}
               />
+              <Pressable onPress={() => router.push('/recuperar-senha')}>
+                <Text style={styles.forgot}>Esqueci minha senha</Text>
+              </Pressable>
               {message ? <Text accessibilityRole="alert" style={styles.message}>{message}</Text> : null}
               <PrimaryButton loading={loading} onPress={handleLogin} title="Entrar" />
+              <Pressable onPress={() => router.push('/cadastro')}>
+                <Text style={styles.create}>Ainda não tem conta? Cadastre-se</Text>
+              </Pressable>
             </View>
           </View>
 
@@ -111,5 +117,7 @@ const styles = StyleSheet.create({
   subtitle: { color: colors.textMuted, fontSize: 15, lineHeight: 22, marginTop: 7 },
   form: { gap: 18, marginTop: 28 },
   message: { color: colors.danger, backgroundColor: '#3F171B', borderRadius: 12, padding: 12, fontSize: 14, lineHeight: 20 },
+  forgot: { color: '#C4B5FD', fontSize: 14, fontWeight: '600', textAlign: 'right', marginTop: -8 },
+  create: { color: '#C4B5FD', fontSize: 14, fontWeight: '700', textAlign: 'center', paddingVertical: 4 },
   footer: { color: colors.textMuted, fontSize: 13, textAlign: 'center' },
 });
