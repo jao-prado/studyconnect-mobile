@@ -7,6 +7,7 @@ const TAB_ICONS = {
   explorar: '⌕',
   'minhas-trilhas': '◇',
   home: '⌂',
+  perfil: '●',
 };
 
 function TabIcon({ name, focused }) {
@@ -34,6 +35,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
       <Tabs.Screen name="minhas-trilhas" options={{ title: 'Minhas Trilhas' }} />
       <Tabs.Screen name="home" options={{ title: 'Início' }} />
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );
 }

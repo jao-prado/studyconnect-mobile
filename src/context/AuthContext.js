@@ -131,6 +131,15 @@ export function AuthProvider({ children }) {
 
   const cancelMfa = useCallback(() => setPendingMfaEmail(null), []);
 
+  const updateUser = useCallback(async (changes) => {
+    const session = await readSession();
+    if (!session?.token || !session?.user) return null;
+    const nextUser = publicUser({ ...session.user, ...changes });
+    await saveSession({ ...session, user: nextUser });
+    setUser(nextUser);
+    return nextUser;
+  }, []);
+
   const value = useMemo(() => ({
     user,
     isRestoring,
@@ -139,7 +148,8 @@ export function AuthProvider({ children }) {
     verifyMfa,
     cancelMfa,
     logout,
-  }), [cancelMfa, isRestoring, logout, pendingMfaEmail, signIn, user, verifyMfa]);
+    updateUser,
+  }), [cancelMfa, isRestoring, logout, pendingMfaEmail, signIn, updateUser, user, verifyMfa]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
