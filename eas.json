@@ -5,12 +5,16 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "906623486707-muhrcnufm2c0uhgp3okahjaukdunkq5h.apps.googleusercontent.com"
+      }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://studyconnect-8bfr.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://studyconnect-8bfr.onrender.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "906623486707-muhrcnufm2c0uhgp3okahjaukdunkq5h.apps.googleusercontent.com"
       },
       "android": {
         "buildType": "apk"
@@ -19,7 +23,8 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://studyconnect-8bfr.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://studyconnect-8bfr.onrender.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "906623486707-muhrcnufm2c0uhgp3okahjaukdunkq5h.apps.googleusercontent.com"
       }
     }
   }

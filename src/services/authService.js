@@ -27,6 +27,17 @@ export async function verifyMfa(email, code) {
   return validateAuthResponse(data);
 }
 
+export async function googleLogin(idToken) {
+  const data = await apiRequest('/auth/google', {
+    method: 'POST',
+    auth: false,
+    body: { idToken },
+  });
+
+  if (data?.mfaPendente === true) return data;
+  return validateAuthResponse(data);
+}
+
 export function registerStudent(nome, email, senha) {
   return apiRequest('/usuarios', { method: 'POST', auth: false, body: { nome, email, senha } });
 }

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../../theme/colors';
 
@@ -7,6 +7,7 @@ const TAB_ICONS = {
   explorar: '⌕',
   'minhas-trilhas': '◇',
   home: '⌂',
+  'study-mode': '◷',
   perfil: '●',
 };
 
@@ -35,6 +36,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
       <Tabs.Screen name="minhas-trilhas" options={{ title: 'Minhas Trilhas' }} />
       <Tabs.Screen name="home" options={{ title: 'Início' }} />
+      <Tabs.Screen name="study-mode" options={{ title: 'StudyMode', href: Platform.OS === 'android' ? undefined : null }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );

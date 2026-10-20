@@ -4,8 +4,10 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FormInput } from '../../components/FormInput';
+import { GoogleButton } from '../../components/GoogleButton';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useAuth } from '../../context/AuthContext';
+import { requestGoogleIdToken } from '../../services/googleSignInService';
 import { colors } from '../../theme/colors';
 
 function isValidEmail(value) {
@@ -13,15 +15,17 @@ function isValidEmail(value) {
 }
 
 export default function LoginScreen() {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const passwordRef = useRef(null);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleLogin() {
+    if (loading || googleLoading) return;
     const normalizedEmail = email.trim().toLowerCase();
     const nextErrors = {};
     if (!normalizedEmail) nextErrors.email = 'Informe seu e-mail.';
@@ -45,6 +49,26 @@ export default function LoginScreen() {
     }
   }
 
+  async function handleGoogleLogin() {
+    if (loading || googleLoading) return;
+    setGoogleLoading(true);
+    setMessage('');
+    try {
+      const idToken = await requestGoogleIdToken();
+      if (!idToken) return;
+      const result = await signInWithGoogle(idToken);
+      router.replace(result.mfaRequired ? '/mfa' : '/home');
+    } catch (error) {
+      if (error.code === 'STUDENT_ONLY') setMessage('Este aplicativo é exclusivo para contas de aluno.');
+      else if (error.code === 'GOOGLE_MFA_REQUIRED') setMessage(error.message);
+      else if (error.status === 401) setMessage('O servidor não aceitou a credencial do Google. Verifique a configuração OAuth.');
+      else if (error.status === 403) setMessage('Esta conta está suspensa ou sem permissão de acesso.');
+      else setMessage(error.message || 'Não foi possível entrar com Google. Tente novamente.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -60,6 +84,12 @@ export default function LoginScreen() {
             <Text style={styles.subtitle}>Entre para continuar seus estudos.</Text>
 
             <View style={styles.form}>
+              <GoogleButton loading={googleLoading} disabled={loading} onPress={handleGoogleLogin} />
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>ou entre com e-mail</Text>
+                <View style={styles.dividerLine} />
+              </View>
               <FormInput
                 autoCapitalize="none"
                 autoComplete="email"
@@ -85,12 +115,12 @@ export default function LoginScreen() {
                 secureTextEntry
                 value={senha}
               />
-              <Pressable onPress={() => router.push('/recuperar-senha')}>
+              <Pressable disabled={loading || googleLoading} onPress={() => router.push('/recuperar-senha')}>
                 <Text style={styles.forgot}>Esqueci minha senha</Text>
               </Pressable>
               {message ? <Text accessibilityRole="alert" style={styles.message}>{message}</Text> : null}
-              <PrimaryButton loading={loading} onPress={handleLogin} title="Entrar" />
-              <Pressable onPress={() => router.push('/cadastro')}>
+              <PrimaryButton disabled={googleLoading} loading={loading} onPress={handleLogin} title="Entrar" />
+              <Pressable disabled={loading || googleLoading} onPress={() => router.push('/cadastro')}>
                 <Text style={styles.create}>Ainda não tem conta? Cadastre-se</Text>
               </Pressable>
             </View>
@@ -116,6 +146,9 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 29, lineHeight: 35, fontWeight: '800', marginTop: 10 },
   subtitle: { color: colors.textMuted, fontSize: 15, lineHeight: 22, marginTop: 7 },
   form: { gap: 18, marginTop: 28 },
+  divider: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  dividerText: { color: colors.textMuted, fontSize: 12 },
   message: { color: colors.danger, backgroundColor: '#3F171B', borderRadius: 12, padding: 12, fontSize: 14, lineHeight: 20 },
   forgot: { color: '#C4B5FD', fontSize: 14, fontWeight: '600', textAlign: 'right', marginTop: -8 },
   create: { color: '#C4B5FD', fontSize: 14, fontWeight: '700', textAlign: 'center', paddingVertical: 4 },

@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { getCurrentUser, login as loginRequest, verifyMfa as verifyMfaRequest } from '../services/authService';
+import { getCurrentUser, googleLogin as googleLoginRequest, login as loginRequest, verifyMfa as verifyMfaRequest } from '../services/authService';
 import { ApiError, setAccessToken, setUnauthorizedHandler } from '../services/apiClient';
+import { clearGoogleSession } from '../services/googleSignInService';
 import { clearSession, readSession, saveSession } from '../services/sessionStorage';
 
 const AuthContext = createContext(null);
@@ -35,7 +36,7 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
     setUser(null);
     setPendingMfaEmail(null);
-    await clearSession();
+    await Promise.all([clearSession(), clearGoogleSession()]);
   }, []);
 
   const finishAuthentication = useCallback(async (data) => {
@@ -121,6 +122,22 @@ export function AuthProvider({ children }) {
     return { mfaRequired: false };
   }, [finishAuthentication]);
 
+  const signInWithGoogle = useCallback(async (idToken) => {
+    const data = await googleLoginRequest(idToken);
+    if (data?.mfaPendente === true) {
+      setPendingMfaEmail(data.email);
+      return { mfaRequired: true };
+    }
+    if (data?.mfaHabilitado === true) {
+      throw new ApiError('Esta conta usa MFA. O servidor precisa iniciar o desafio antes de liberar o acesso pelo Google.', {
+        status: 403,
+        code: 'GOOGLE_MFA_REQUIRED',
+      });
+    }
+    await finishAuthentication(data);
+    return { mfaRequired: false };
+  }, [finishAuthentication]);
+
   const verifyMfa = useCallback(async (code) => {
     if (!pendingMfaEmail) {
       throw new Error('A sessão de verificação expirou. Faça login novamente.');
@@ -145,11 +162,12 @@ export function AuthProvider({ children }) {
     isRestoring,
     pendingMfaEmail,
     signIn,
+    signInWithGoogle,
     verifyMfa,
     cancelMfa,
     logout,
     updateUser,
-  }), [cancelMfa, isRestoring, logout, pendingMfaEmail, signIn, updateUser, user, verifyMfa]);
+  }), [cancelMfa, isRestoring, logout, pendingMfaEmail, signIn, signInWithGoogle, updateUser, user, verifyMfa]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
