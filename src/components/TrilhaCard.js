@@ -1,12 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
+import { ProgressBar } from './ProgressBar';
 
 function fallback(value, text) {
   return value?.trim() || text;
 }
 
-export function TrilhaCard({ trilha, matriculado, onPress }) {
+export function TrilhaCard({ trilha, matriculado, onPress, progresso }) {
   const privada = trilha.tipo === 'PRIVADA';
 
   return (
@@ -28,6 +29,8 @@ export function TrilhaCard({ trilha, matriculado, onPress }) {
 
       <Text numberOfLines={2} style={styles.title}>{fallback(trilha.nome, 'Trilha sem nome')}</Text>
       <Text numberOfLines={3} style={styles.description}>{fallback(trilha.descricao, 'Sem descrição disponível.')}</Text>
+
+      {matriculado && progresso ? <ProgressBar compact percentual={progresso.percentual} /> : null}
 
       <View style={styles.footer}>
         <View style={styles.meta}>

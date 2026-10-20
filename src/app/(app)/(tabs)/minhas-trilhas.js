@@ -7,14 +7,26 @@ import { ScreenHeader } from '../../../components/ScreenHeader';
 import { StateView } from '../../../components/StateView';
 import { TrilhaCard } from '../../../components/TrilhaCard';
 import { useTrilhas } from '../../../context/TrilhasContext';
+import { useProgresso } from '../../../context/ProgressoContext';
 import { colors } from '../../../theme/colors';
 
 export default function MinhasTrilhasScreen() {
   const { minhasTrilhas, loading, error, ensureLoaded, refresh } = useTrilhas();
+  const { porTrilha, loadProgressoTrilha } = useProgresso();
 
   useEffect(() => {
     void ensureLoaded().catch(() => {});
   }, [ensureLoaded]);
+
+  useEffect(() => {
+    if (minhasTrilhas.length === 0) return;
+    const timeout = setTimeout(() => {
+      void Promise.all(
+        minhasTrilhas.map((trilha) => loadProgressoTrilha(trilha.id).catch(() => null)),
+      );
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [loadProgressoTrilha, minhasTrilhas]);
 
   if (loading && minhasTrilhas.length === 0) {
     return <SafeAreaView edges={['top']} style={styles.safeArea}><StateView loading title="Carregando matrículas" message="Buscando suas trilhas no StudyConnect." /></SafeAreaView>;
@@ -37,6 +49,7 @@ export default function MinhasTrilhasScreen() {
           <TrilhaCard
             matriculado
             onPress={() => router.push({ pathname: '/trilhas/[id]', params: { id: String(item.id) } })}
+            progresso={porTrilha[String(item.id)]}
             trilha={item}
           />
         )}
