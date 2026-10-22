@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -85,14 +86,14 @@ export default function StudySettingsScreen() {
     <SafeAreaView edges={['top', 'bottom']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel="Voltar" onPress={() => router.back()} style={styles.backButton}><Text style={styles.backIcon}>‹</Text></Pressable>
+          <Pressable accessibilityLabel="Voltar" onPress={() => router.back()} style={styles.backButton}><Ionicons color={colors.text} name="chevron-back" size={22} /></Pressable>
           <View style={styles.headerText}><Text style={styles.eyebrow}>STUDYMODE</Text><Text style={styles.title}>Configurações</Text></View>
         </View>
 
         <Text style={styles.sectionTitle}>Temporizador</Text>
         <Pressable onPress={() => setTimerModalVisible(true)} style={styles.timerCard}>
           <View><Text style={styles.cardTitle}>Durações do Pomodoro</Text><Text style={styles.cardDescription}>{settings.focusMinutes} min foco · {settings.shortBreakMinutes} min descanso · {settings.longBreakMinutes} min longo</Text></View>
-          <Text style={styles.chevron}>›</Text>
+          <Ionicons color="#B9A5E8" name="chevron-forward" size={19} />
         </Pressable>
 
         <Text style={styles.sectionTitle}>Notificações</Text>
@@ -157,19 +158,17 @@ function SettingSwitch({ label, description, value, onValueChange, disabled }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 22, paddingBottom: 40 },
+  content: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 32 },
   header: { flexDirection: 'row', alignItems: 'center' },
-  backButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  backIcon: { color: colors.text, fontSize: 30, lineHeight: 32 },
+  backButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border },
   headerText: { marginLeft: 14 },
-  eyebrow: { color: '#C4B5FD', fontSize: 10, fontWeight: '800', letterSpacing: 1.3 },
-  title: { color: colors.text, fontSize: 27, fontWeight: '800', marginTop: 2 },
-  sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '800', marginTop: 28, marginBottom: 11 },
-  timerCard: { minHeight: 76, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 19, padding: 17 },
-  cardTitle: { color: colors.text, fontSize: 15, fontWeight: '700' },
-  cardDescription: { color: colors.textMuted, fontSize: 12, lineHeight: 18, marginTop: 4 },
-  chevron: { color: '#A78BFA', fontSize: 27, marginLeft: 'auto' },
-  settingsCard: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 17 },
+  eyebrow: { color: '#B9A5E8', fontSize: 10, fontWeight: '700', letterSpacing: 1.1 },
+  title: { color: colors.text, fontSize: 24, fontWeight: '700', marginTop: 2 },
+  sectionTitle: { color: colors.text, fontSize: 16, fontWeight: '700', marginTop: 23, marginBottom: 10 },
+  timerCard: { minHeight: 72, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 17, padding: 15 },
+  cardTitle: { color: colors.text, fontSize: 14, fontWeight: '600' },
+  cardDescription: { color: colors.textMuted, fontSize: 11, lineHeight: 16, marginTop: 4 },
+  settingsCard: { backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 17, padding: 15 },
   settingRow: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12 },
   settingText: { flex: 1 },
   divider: { height: 1, backgroundColor: colors.border, marginVertical: 10 },
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
   colon: { color: colors.text, fontSize: 20, fontWeight: '800', marginHorizontal: 6 },
   saveTimeButton: { minHeight: 48, justifyContent: 'center', backgroundColor: colors.primary, borderRadius: 12, paddingHorizontal: 18, marginLeft: 'auto' },
   saveTimeText: { color: colors.white, fontSize: 13, fontWeight: '800' },
-  permissionCard: { minHeight: 70, flexDirection: 'row', alignItems: 'center', backgroundColor: '#111113', borderRadius: 17, padding: 15, marginTop: 12 },
+  permissionCard: { minHeight: 66, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 16, padding: 14, marginTop: 11 },
   permissionDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: '#A78BFA', marginRight: 12 },
   permissionText: { flex: 1 },
   permissionTitle: { color: colors.text, fontSize: 13, fontWeight: '700' },
@@ -190,4 +189,3 @@ const styles = StyleSheet.create({
   errorText: { color: colors.danger, backgroundColor: '#2A1114', borderRadius: 13, padding: 12, fontSize: 12, lineHeight: 18, marginTop: 10 },
   note: { color: colors.textMuted, fontSize: 12, lineHeight: 18, marginTop: 14 },
 });
-

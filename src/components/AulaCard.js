@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
@@ -21,22 +22,21 @@ export function AulaCard({ aula, index, concluida, onPress }) {
           {concluida ? 'Concluída' : hasQuiz ? 'Questionário' : 'Aula'}
         </Text>
       </View>
-      <Text style={styles.arrow}>›</Text>
+      <Ionicons color={colors.textMuted} name="chevron-forward" size={18} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', alignItems: 'center', gap: 13, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 17, padding: 15 },
+  card: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 16, padding: 13 },
   cardDone: { borderColor: '#28543A' },
   pressed: { opacity: 0.74 },
-  number: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
+  number: { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   numberDone: { backgroundColor: '#123322' },
   numberText: { color: colors.textMuted, fontSize: 14, fontWeight: '800' },
   numberTextDone: { color: '#86EFAC' },
   copy: { flex: 1 },
-  title: { color: colors.text, fontSize: 15, lineHeight: 20, fontWeight: '700' },
-  status: { color: '#C4B5FD', fontSize: 12, fontWeight: '600', marginTop: 4 },
+  title: { color: colors.text, fontSize: 14, lineHeight: 19, fontWeight: '600' },
+  status: { color: '#B9A5E8', fontSize: 11, fontWeight: '500', marginTop: 3 },
   statusDone: { color: '#86EFAC' },
-  arrow: { color: colors.textMuted, fontSize: 27 },
 });

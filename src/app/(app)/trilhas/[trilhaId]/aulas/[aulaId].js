@@ -76,9 +76,9 @@ export default function AulaScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.background }, content: { padding: 20, paddingBottom: 44, gap: 22 },
+  safeArea: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 32, gap: 16 },
   backButton: { alignSelf: 'flex-start', minHeight: 42, justifyContent: 'center', paddingRight: 18 }, backText: { color: '#C4B5FD', fontSize: 15, fontWeight: '700' },
-  header: { gap: 8 }, eyebrow: { color: '#C4B5FD', fontSize: 11, fontWeight: '800', letterSpacing: 1.3 }, title: { color: colors.text, fontSize: 29, lineHeight: 36, fontWeight: '800' },
+  header: { gap: 7 }, eyebrow: { color: '#B9A5E8', fontSize: 10, fontWeight: '700', letterSpacing: 1.1 }, title: { color: colors.text, fontSize: 24, lineHeight: 31, fontWeight: '700', letterSpacing: -0.25 },
   completedBadge: { alignSelf: 'flex-start', color: '#86EFAC', backgroundColor: '#123322', borderRadius: 999, paddingHorizontal: 11, paddingVertical: 6, fontSize: 12, fontWeight: '700', marginTop: 5 },
-  completeCard: { backgroundColor: '#111113', borderWidth: 1, borderColor: colors.border, borderRadius: 18, padding: 18, gap: 12 }, completeTitle: { color: colors.text, fontSize: 18, fontWeight: '800' }, completeText: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
+  completeCard: { backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 16, padding: 16, gap: 10 }, completeTitle: { color: colors.text, fontSize: 16, fontWeight: '700' }, completeText: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
 });

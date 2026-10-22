@@ -11,7 +11,7 @@ export function ProgressBar({ percentual = 0, compact = false }) {
         <Text style={[styles.label, compact ? styles.compactLabel : null]}>Progresso</Text>
         <Text style={[styles.percent, compact ? styles.compactPercent : null]}>{safePercent}%</Text>
       </View>
-      <View style={[styles.track, compact ? styles.compactTrack : null]}>
+      <View accessibilityLabel={`${safePercent}% concluído`} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: safePercent }} style={[styles.track, compact ? styles.compactTrack : null]}>
         <View style={[styles.fill, { width: `${safePercent}%` }]} />
       </View>
     </View>

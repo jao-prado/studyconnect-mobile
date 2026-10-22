@@ -1,3 +1,5 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -7,8 +9,9 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 import { colors } from '../theme/colors';
 
 function RootNavigator() {
-  const { isRestoring } = useAuth();
-  if (isRestoring) return <LoadingScreen />;
+  const { isRestoring, isAuthTransitioning } = useAuth();
+  const [iconsLoaded, iconsError] = useFonts(Ionicons.font);
+  if (isRestoring || isAuthTransitioning || (!iconsLoaded && !iconsError)) return <LoadingScreen />;
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>

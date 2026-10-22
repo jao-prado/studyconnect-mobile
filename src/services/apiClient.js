@@ -12,6 +12,7 @@ let accessToken = null;
 let unauthorizedHandler = null;
 
 export class ApiError extends Error {
+  /** @param {string} message @param {{ status?: number, code?: string, cause?: unknown }} [options] */
   constructor(message, { status = 0, code = 'UNKNOWN', cause } = {}) {
     super(message);
     this.name = 'ApiError';

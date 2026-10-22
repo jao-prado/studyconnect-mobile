@@ -17,8 +17,8 @@ export function ScreenHeader({ eyebrow, title, subtitle, action }) {
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 },
-  copy: { flex: 1 },
-  eyebrow: { color: '#C4B5FD', fontSize: 12, fontWeight: '800', letterSpacing: 1.3 },
-  title: { color: colors.text, fontSize: 30, lineHeight: 37, fontWeight: '800', marginTop: 6 },
-  subtitle: { color: colors.textMuted, fontSize: 15, lineHeight: 22, marginTop: 7 },
+  copy: { flex: 1, minWidth: 0 },
+  eyebrow: { color: '#B9A5E8', fontSize: 10, lineHeight: 14, fontWeight: '700', letterSpacing: 1.1 },
+  title: { color: colors.text, fontSize: 24, lineHeight: 30, fontWeight: '700', letterSpacing: -0.25, marginTop: 4 },
+  subtitle: { color: colors.textMuted, fontSize: 13, lineHeight: 19, marginTop: 5 },
 });

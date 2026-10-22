@@ -1,52 +1,53 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../theme/colors';
 
 const TAB_ICONS = {
-  explorar: '⌕',
-  'minhas-trilhas': '◇',
-  home: '⌂',
-  'study-mode': '◷',
-  perfil: '●',
+  home: ['home-outline', 'home'],
+  explorar: ['search-outline', 'search'],
+  'minhas-trilhas': ['book-outline', 'book'],
+  'study-mode': ['timer-outline', 'timer'],
+  perfil: ['person-outline', 'person'],
 };
 
-function TabIcon({ name, focused }) {
-  return (
-    <View style={[styles.iconBox, focused ? styles.iconBoxFocused : null]}>
-      <Text style={[styles.icon, focused ? styles.iconFocused : null]}>{TAB_ICONS[name]}</Text>
-    </View>
-  );
+function TabIcon({ name, focused, color }) {
+  return <Ionicons name={TAB_ICONS[name][focused ? 1 : 0]} size={23} color={color} />;
 }
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       initialRouteName="home"
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: colors.text,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarHideOnKeyboard: true,
-        tabBarIcon: ({ focused }) => <TabIcon focused={focused} name={route.name} />,
-        tabBarStyle: styles.tabBar,
+        tabBarIcon: ({ focused, color }) => <TabIcon name={route.name} focused={focused} color={color} />,
+        tabBarStyle: [styles.tabBar, { height: 60 + insets.bottom, paddingBottom: Math.max(insets.bottom, 8) }],
         tabBarLabelStyle: styles.label,
       })}
     >
-      <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
-      <Tabs.Screen name="minhas-trilhas" options={{ title: 'Minhas Trilhas' }} />
       <Tabs.Screen name="home" options={{ title: 'Início' }} />
-      <Tabs.Screen name="study-mode" options={{ title: 'StudyMode', href: Platform.OS === 'android' ? undefined : null }} />
+      <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
+      <Tabs.Screen name="minhas-trilhas" options={{ title: 'Trilhas' }} />
+      <Tabs.Screen name="study-mode" options={{ title: 'Foco', href: Platform.OS === 'android' ? undefined : null }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBar: { position: 'absolute', height: 72, paddingTop: 7, paddingBottom: 8, backgroundColor: '#111113', borderTopColor: colors.border },
-  label: { fontSize: 11, fontWeight: '700' },
-  iconBox: { width: 31, height: 25, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  iconBoxFocused: { backgroundColor: colors.primarySoft },
-  icon: { color: colors.textMuted, fontSize: 21, lineHeight: 23 },
-  iconFocused: { color: '#C4B5FD' },
+  tabBar: {
+    paddingTop: 5,
+    backgroundColor: colors.surfaceSubtle,
+    borderTopColor: colors.border,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  label: { fontSize: 10, lineHeight: 14, fontWeight: '600' },
 });

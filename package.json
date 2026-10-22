@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "expo": "~57.0.30",
+    "expo": "~57.0.31",
     "expo-constants": "~57.0.22",
+    "expo-dev-client": "~57.0.20",
+    "expo-file-system": "~57.0.7",
     "expo-font": "~57.0.4",
+    "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.13",
     "expo-notifications": "~57.0.23",
-    "expo-router": "~57.0.28",
+    "expo-router": "~57.0.29",
     "expo-secure-store": "~57.0.4",
     "expo-splash-screen": "~57.0.10",
     "expo-status-bar": "~57.0.1",
@@ -29,7 +33,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:study-mode": "node tests/studyAnalytics.test.cjs && node tests/studyNotifications.test.cjs"
+    "test:study-mode": "node tests/studyAnalytics.test.cjs && node tests/studyNotifications.test.cjs && node tests/studyModeStorage.test.cjs"
   },
   "private": true,
   "devDependencies": {

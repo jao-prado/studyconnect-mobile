@@ -39,11 +39,15 @@ export async function googleLogin(idToken) {
 }
 
 export function registerStudent(nome, email, senha) {
-  return apiRequest('/usuarios', { method: 'POST', auth: false, body: { nome, email, senha } });
+  return apiRequest('/auth/register', { method: 'POST', auth: false, body: { nome, email, senha } });
 }
 
-export function verifyEmail(email, code) {
-  return apiRequest('/auth/verify-email', { method: 'POST', auth: false, body: { email, code } });
+export function verifyEmail(email, code, registrationToken) {
+  return apiRequest('/auth/verify-email', {
+    method: 'POST',
+    auth: false,
+    body: { email, code, ...(registrationToken ? { registrationToken } : {}) },
+  });
 }
 
 export function resendVerification(email) {

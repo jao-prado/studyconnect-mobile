@@ -5,7 +5,7 @@
     "scheme": "studyconnect",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/studyconnect-icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true
@@ -14,14 +14,13 @@
       "package": "com.studyconnect.mobile",
       "permissions": [],
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0B0B0F",
+        "foregroundImage": "./assets/studyconnect-android-foreground.png",
+        "monochromeImage": "./assets/studyconnect-android-monochrome.png"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/studyconnect-favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -29,16 +28,24 @@
       [
         "expo-notifications",
         {
-          "color": "#7C3AED"
+          "color": "#8B5CF6"
         }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#08080A",
-          "image": "./assets/splash-icon.png",
+          "backgroundColor": "#0B0B0F",
+          "image": "./assets/studyconnect-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permitir que o StudyConnect acesse suas fotos para a imagem do perfil.",
+          "cameraPermission": "Permitir que o StudyConnect use a câmera para tirar sua foto de perfil.",
+          "microphonePermission": false
         }
       ],
       "expo-font"

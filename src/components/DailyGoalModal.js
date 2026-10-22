@@ -14,14 +14,14 @@ export function DailyGoalModal({ currentGoal, onClose, onSave }) {
 
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.backdrop}>
         <Pressable accessibilityLabel="Fechar meta diária" onPress={onClose} style={StyleSheet.absoluteFill} />
         <View style={styles.card}>
           <Text style={styles.title}>Meta diária</Text>
           <Text style={styles.description}>Defina quantos minutos de foco deseja concluir por dia.</Text>
           <View style={styles.presets}>
             {DAILY_GOAL_PRESETS.map((minutes) => (
-              <Pressable key={minutes} onPress={() => setValue(String(minutes))} style={[styles.preset, Number(value) === minutes && styles.presetSelected]}>
+              <Pressable accessibilityRole="radio" accessibilityState={{ checked: Number(value) === minutes }} key={minutes} onPress={() => setValue(String(minutes))} style={[styles.preset, Number(value) === minutes && styles.presetSelected]}>
                 <Text style={[styles.presetText, Number(value) === minutes && styles.presetTextSelected]}>{minutes} min</Text>
               </Pressable>
             ))}
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 22, fontWeight: '800' },
   description: { color: colors.textMuted, fontSize: 14, lineHeight: 20, marginTop: 6 },
   presets: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 },
-  preset: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background },
+  preset: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background },
   presetSelected: { borderColor: '#8B5CF6', backgroundColor: colors.primarySoft },
   presetText: { color: colors.textMuted, fontSize: 13, fontWeight: '700' },
   presetTextSelected: { color: '#DDD6FE' },

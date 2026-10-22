@@ -4,9 +4,7 @@ let loadedModule = null;
 let configured = false;
 
 function googleError(message, code) {
-  const error = new Error(message);
-  error.code = code;
-  return error;
+  return Object.assign(new Error(message), { code });
 }
 
 async function getGoogleModule() {

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 
 import { PrimaryButton } from './PrimaryButton';
 import { colors } from '../theme/colors';
@@ -15,9 +15,9 @@ export function PrivateAccessModal({ visible, loading, error, onClose, onSubmit 
 
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.overlay}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlay}>
         <Pressable accessibilityRole="button" onPress={onClose} style={StyleSheet.absoluteFill} />
-        <View style={styles.card}>
+        <ScrollView contentContainerStyle={styles.card} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <Text style={styles.eyebrow}>TRILHA PRIVADA</Text>
           <Text style={styles.title}>Código de acesso</Text>
           <Text style={styles.subtitle}>Digite o código compartilhado pelo professor. O acesso já realizará sua matrícula.</Text>
@@ -41,7 +41,7 @@ export function PrivateAccessModal({ visible, loading, error, onClose, onSubmit 
           <Pressable accessibilityRole="button" disabled={loading} onPress={onClose} style={styles.cancel}>
             <Text style={styles.cancelText}>Cancelar</Text>
           </Pressable>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -49,7 +49,7 @@ export function PrivateAccessModal({ visible, loading, error, onClose, onSubmit 
 
 const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.72)' },
-  card: { backgroundColor: colors.surface, borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: colors.border, padding: 24, paddingBottom: 30 },
+  card: { flexGrow: 0, backgroundColor: colors.surface, borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: colors.border, padding: 24, paddingBottom: 30 },
   eyebrow: { color: '#C4B5FD', fontSize: 12, fontWeight: '800', letterSpacing: 1.2 },
   title: { color: colors.text, fontSize: 25, fontWeight: '800', marginTop: 7 },
   subtitle: { color: colors.textMuted, fontSize: 14, lineHeight: 21, marginTop: 8 },

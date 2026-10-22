@@ -3,6 +3,7 @@ import { Pressable, Text } from 'react-native';
 import { router } from 'expo-router';
 
 import { AuthScreen, authStyles } from '../../components/AuthScreen';
+import { FeedbackMessage } from '../../components/FeedbackMessage';
 import { FormInput } from '../../components/FormInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { forgotPassword, resetPassword } from '../../services/authService';
@@ -12,7 +13,12 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function recoveryToken(value) {
   const trimmed = value.trim();
   const match = trimmed.match(/[?&]token=([^&#\s]+)/);
-  return match ? decodeURIComponent(match[1]) : trimmed;
+  if (!match) return trimmed;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return '';
+  }
 }
 
 export default function RecuperarSenhaScreen() {
@@ -79,26 +85,27 @@ export default function RecuperarSenhaScreen() {
     }
   }
 
-  const title = step === 'email' ? 'Recupere sua senha' : step === 'reset' ? 'Crie uma nova senha' : 'Senha atualizada';
-  const subtitle = step === 'email' ? 'Informe o e-mail da sua conta.' : step === 'reset' ? 'Cole o link de recuperação recebido ou somente o valor após “token=”.' : 'Você já pode entrar com sua nova senha.';
+  const eyebrow = step === 'email' ? 'Recuperação · Etapa 1 de 2' : step === 'reset' ? 'Recuperação · Etapa 2 de 2' : 'Recuperação concluída';
+  const title = step === 'email' ? 'Recuperar senha' : step === 'reset' ? 'Defina uma nova senha' : 'Senha atualizada';
+  const subtitle = step === 'email' ? 'Informe seu e-mail para receber as instruções.' : step === 'reset' ? 'Cole o link ou token recebido por e-mail e escolha uma nova senha.' : 'Sua nova senha já está valendo. Você pode entrar normalmente.';
 
   return (
-    <AuthScreen eyebrow="RECUPERAÇÃO" title={title} subtitle={subtitle}>
+    <AuthScreen backTo="/login" centered eyebrow={eyebrow} icon={step === 'email' ? 'mail-outline' : step === 'reset' ? 'lock-closed-outline' : 'checkmark-circle-outline'} title={title} subtitle={subtitle}>
       {step === 'email' ? (
-        <FormInput label="E-mail" autoCapitalize="none" autoComplete="email" keyboardType="email-address" maxLength={45} value={email} error={errors.email} onChangeText={(value) => { setEmail(value); setErrors({}); }} onSubmitEditing={requestReset} returnKeyType="done" />
+        <FormInput label="E-mail" autoCapitalize="none" autoComplete="email" autoCorrect={false} keyboardType="email-address" maxLength={45} placeholder="seu@email.com" value={email} error={errors.email} onChangeText={(value) => { setEmail(value); setErrors({}); setMessage(''); }} onSubmitEditing={requestReset} returnKeyType="done" />
       ) : null}
       {step === 'reset' ? (
         <>
-          <FormInput label="Link ou token de recuperação" autoCapitalize="none" autoCorrect={false} value={token} error={errors.token} onChangeText={(value) => { setToken(value); setErrors((current) => ({ ...current, token: null })); }} />
-          <FormInput label="Nova senha" autoCapitalize="none" autoComplete="new-password" secureTextEntry value={senha} error={errors.senha} onChangeText={(value) => { setSenha(value); setErrors((current) => ({ ...current, senha: null })); }} onSubmitEditing={() => confirmationRef.current?.focus()} returnKeyType="next" />
-          <FormInput ref={confirmationRef} label="Confirmar nova senha" autoCapitalize="none" autoComplete="new-password" secureTextEntry value={confirmacao} error={errors.confirmacao} onChangeText={(value) => { setConfirmacao(value); setErrors((current) => ({ ...current, confirmacao: null })); }} onSubmitEditing={submitReset} returnKeyType="done" />
+          <FormInput label="Link ou token de recuperação" autoCapitalize="none" autoCorrect={false} hint="Você pode colar o link completo; o aplicativo identifica o token." placeholder="Cole aqui o conteúdo recebido" value={token} error={errors.token} onChangeText={(value) => { setToken(value); setErrors((current) => ({ ...current, token: null })); setMessage(''); }} />
+          <FormInput label="Nova senha" autoCapitalize="none" autoComplete="new-password" hint="Use pelo menos 6 caracteres." placeholder="Digite a nova senha" secureTextEntry value={senha} error={errors.senha} onChangeText={(value) => { setSenha(value); setErrors((current) => ({ ...current, senha: null })); setMessage(''); }} onSubmitEditing={() => confirmationRef.current?.focus()} returnKeyType="next" />
+          <FormInput ref={confirmationRef} label="Confirmar nova senha" autoCapitalize="none" autoComplete="new-password" placeholder="Digite novamente" secureTextEntry value={confirmacao} error={errors.confirmacao} onChangeText={(value) => { setConfirmacao(value); setErrors((current) => ({ ...current, confirmacao: null })); setMessage(''); }} onSubmitEditing={submitReset} returnKeyType="done" />
         </>
       ) : null}
-      {message ? <Text accessibilityRole="alert" style={[authStyles.message, messageKind === 'success' ? authStyles.success : authStyles.error]}>{message}</Text> : null}
+      <FeedbackMessage kind={messageKind}>{message}</FeedbackMessage>
       {step === 'email' ? <PrimaryButton title="Enviar instruções" loading={loading} onPress={requestReset} /> : null}
       {step === 'reset' ? <PrimaryButton title="Redefinir senha" loading={loading} onPress={submitReset} /> : null}
       {step === 'success' ? <PrimaryButton title="Ir para o login" onPress={() => router.replace('/login')} /> : null}
-      {step !== 'success' ? <Pressable disabled={loading} onPress={() => router.replace('/login')}><Text style={authStyles.link}>Voltar ao login</Text></Pressable> : null}
+      {step !== 'success' ? <Pressable accessibilityRole="button" accessibilityState={{ disabled: loading }} disabled={loading} onPress={() => router.replace('/login')} style={authStyles.linkButton}><Text style={authStyles.link}>Voltar ao login</Text></Pressable> : null}
     </AuthScreen>
   );
 }

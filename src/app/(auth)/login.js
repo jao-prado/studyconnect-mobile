@@ -1,14 +1,16 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AuthScreen, authStyles } from '../../components/AuthScreen';
+import { FeedbackMessage } from '../../components/FeedbackMessage';
 import { FormInput } from '../../components/FormInput';
 import { GoogleButton } from '../../components/GoogleButton';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useAuth } from '../../context/AuthContext';
 import { requestGoogleIdToken } from '../../services/googleSignInService';
 import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/tokens';
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -61,96 +63,86 @@ export default function LoginScreen() {
     } catch (error) {
       if (error.code === 'STUDENT_ONLY') setMessage('Este aplicativo é exclusivo para contas de aluno.');
       else if (error.code === 'GOOGLE_MFA_REQUIRED') setMessage(error.message);
-      else if (error.status === 401) setMessage('O servidor não aceitou a credencial do Google. Verifique a configuração OAuth.');
+      else if (error.status === 401) setMessage('Não foi possível entrar com Google. Tente novamente ou use e-mail e senha.');
       else if (error.status === 403) setMessage('Esta conta está suspensa ou sem permissão de acesso.');
-      else setMessage(error.message || 'Não foi possível entrar com Google. Tente novamente.');
+      else if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') setMessage(error.message);
+      else setMessage('Não foi possível entrar com Google. Tente novamente.');
     } finally {
       setGoogleLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <View style={styles.brand}>
-            <View style={styles.logo}><Text style={styles.logoText}>S</Text></View>
-            <Text style={styles.brandName}>StudyConnect</Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.eyebrow}>ÁREA DO ALUNO</Text>
-            <Text style={styles.title}>Bem-vindo de volta</Text>
-            <Text style={styles.subtitle}>Entre para continuar seus estudos.</Text>
-
-            <View style={styles.form}>
-              <GoogleButton loading={googleLoading} disabled={loading} onPress={handleGoogleLogin} />
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>ou entre com e-mail</Text>
-                <View style={styles.dividerLine} />
-              </View>
-              <FormInput
-                autoCapitalize="none"
-                autoComplete="email"
-                error={errors.email}
-                keyboardType="email-address"
-                label="E-mail"
-                onChangeText={(value) => { setEmail(value); setErrors((current) => ({ ...current, email: null })); }}
-                onSubmitEditing={() => passwordRef.current?.focus()}
-                placeholder="seu@email.com"
-                returnKeyType="next"
-                value={email}
-              />
-              <FormInput
-                ref={passwordRef}
-                autoCapitalize="none"
-                autoComplete="current-password"
-                error={errors.senha}
-                label="Senha"
-                onChangeText={(value) => { setSenha(value); setErrors((current) => ({ ...current, senha: null })); }}
-                onSubmitEditing={handleLogin}
-                placeholder="Sua senha"
-                returnKeyType="done"
-                secureTextEntry
-                value={senha}
-              />
-              <Pressable disabled={loading || googleLoading} onPress={() => router.push('/recuperar-senha')}>
-                <Text style={styles.forgot}>Esqueci minha senha</Text>
-              </Pressable>
-              {message ? <Text accessibilityRole="alert" style={styles.message}>{message}</Text> : null}
-              <PrimaryButton disabled={googleLoading} loading={loading} onPress={handleLogin} title="Entrar" />
-              <Pressable disabled={loading || googleLoading} onPress={() => router.push('/cadastro')}>
-                <Text style={styles.create}>Ainda não tem conta? Cadastre-se</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          <Text style={styles.footer}>Use a mesma conta de aluno do StudyConnect Web.</Text>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <AuthScreen
+      eyebrow="Área do aluno"
+      title="Entre na sua conta"
+      subtitle="Continue seus estudos de onde parou."
+    >
+      <FormInput
+        autoCapitalize="none"
+        autoComplete="email"
+        autoCorrect={false}
+        error={errors.email}
+        keyboardType="email-address"
+        label="E-mail"
+        onChangeText={(value) => { setEmail(value); setErrors((current) => ({ ...current, email: null })); setMessage(''); }}
+        onSubmitEditing={() => passwordRef.current?.focus()}
+        placeholder="seu@email.com"
+        returnKeyType="next"
+        value={email}
+      />
+      <FormInput
+        ref={passwordRef}
+        autoCapitalize="none"
+        autoComplete="current-password"
+        error={errors.senha}
+        label="Senha"
+        onChangeText={(value) => { setSenha(value); setErrors((current) => ({ ...current, senha: null })); setMessage(''); }}
+        onSubmitEditing={handleLogin}
+        placeholder="Digite sua senha"
+        returnKeyType="done"
+        secureTextEntry
+        value={senha}
+      />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: loading || googleLoading }}
+        disabled={loading || googleLoading}
+        onPress={() => router.push('/recuperar-senha')}
+        style={styles.forgotButton}
+      >
+        <Text style={styles.forgot}>Esqueci minha senha</Text>
+      </Pressable>
+      <FeedbackMessage>{message}</FeedbackMessage>
+      <PrimaryButton disabled={googleLoading} loading={loading} onPress={handleLogin} title="Entrar" />
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>ou continue com</Text>
+        <View style={styles.dividerLine} />
+      </View>
+      <GoogleButton loading={googleLoading} disabled={loading} onPress={handleGoogleLogin} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: loading || googleLoading }}
+        disabled={loading || googleLoading}
+        onPress={() => router.push('/cadastro')}
+        style={authStyles.linkButton}
+      >
+        <Text style={authStyles.link}>
+          <Text style={authStyles.linkPrefix}>Ainda não tem conta? </Text>
+          Criar conta
+        </Text>
+      </Pressable>
+      <Text style={styles.webNote}>A mesma conta de aluno funciona no aplicativo e no StudyConnect Web.</Text>
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: colors.background },
-  scroll: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 28 },
-  brand: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', gap: 12 },
-  logo: { width: 44, height: 44, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  logoText: { color: colors.white, fontSize: 23, fontWeight: '800' },
-  brandName: { color: colors.text, fontSize: 24, fontWeight: '800' },
-  card: { width: '100%', maxWidth: 460, alignSelf: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 24, padding: 24 },
-  eyebrow: { color: '#C4B5FD', fontSize: 12, fontWeight: '800', letterSpacing: 1.4 },
-  title: { color: colors.text, fontSize: 29, lineHeight: 35, fontWeight: '800', marginTop: 10 },
-  subtitle: { color: colors.textMuted, fontSize: 15, lineHeight: 22, marginTop: 7 },
-  form: { gap: 18, marginTop: 28 },
-  divider: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm, paddingVertical: spacing.xs },
   dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
-  dividerText: { color: colors.textMuted, fontSize: 12 },
-  message: { color: colors.danger, backgroundColor: '#3F171B', borderRadius: 12, padding: 12, fontSize: 14, lineHeight: 20 },
-  forgot: { color: '#C4B5FD', fontSize: 14, fontWeight: '600', textAlign: 'right', marginTop: -8 },
-  create: { color: '#C4B5FD', fontSize: 14, fontWeight: '700', textAlign: 'center', paddingVertical: 4 },
-  footer: { color: colors.textMuted, fontSize: 13, textAlign: 'center' },
+  dividerText: { color: colors.textMuted, fontSize: 12, lineHeight: 16 },
+  forgotButton: { minHeight: 48, alignSelf: 'flex-end', justifyContent: 'center', marginTop: -spacing.sm },
+  forgot: { color: colors.primaryText, fontSize: 14, lineHeight: 20, fontWeight: '700', textAlign: 'right' },
+  webNote: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: -spacing.sm },
 });

@@ -24,10 +24,10 @@ export function WeeklyStudyChart({ days }) {
 }
 
 const styles = StyleSheet.create({
-  chart: { height: 145, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 14 },
+  chart: { height: 137, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12 },
   column: { flex: 1, alignItems: 'center' },
   value: { color: colors.textMuted, fontSize: 10, height: 15 },
-  barTrack: { height: 98, width: 18, justifyContent: 'flex-end', backgroundColor: colors.surfaceRaised, borderRadius: 6, overflow: 'hidden' },
-  bar: { width: '100%', backgroundColor: '#8B5CF6', borderRadius: 6 },
+  barTrack: { height: 92, width: 16, justifyContent: 'flex-end', backgroundColor: colors.surfaceRaised, borderRadius: 6, overflow: 'hidden' },
+  bar: { width: '100%', backgroundColor: colors.primary, borderRadius: 6 },
   day: { color: colors.textMuted, fontSize: 11, fontWeight: '700', marginTop: 7 },
 });

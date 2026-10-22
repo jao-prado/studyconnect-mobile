@@ -155,7 +155,10 @@ export function StudyModeProvider({ children }) {
     if (!isReady || userId === undefined || userId === null || activeUserRef.current !== userId) return;
     saveQueueRef.current = saveQueueRef.current
       .catch(() => {})
-      .then(() => saveStudyModeData(userId, { settings, session, history, dailyGoalMinutes, notificationPreferences }))
+      .then(() => {
+        if (activeUserRef.current !== userId) return;
+        return saveStudyModeData(userId, { settings, session, history, dailyGoalMinutes, notificationPreferences });
+      })
       .catch(() => {
         if (activeUserRef.current === userId) setNotificationError('Não foi possível agendar o aviso desta sessão. O temporizador continua funcionando.');
       });
@@ -447,4 +450,3 @@ export function useStudyMode() {
   if (!context) throw new Error('useStudyMode deve ser usado dentro de StudyModeProvider.');
   return context;
 }
-

@@ -20,7 +20,7 @@ export function StudySettingsModal({ visible, settings, disabled, onClose, onSav
 
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.backdrop}>
         <Pressable accessibilityLabel="Fechar configurações" onPress={onClose} style={StyleSheet.absoluteFill} />
         <View style={styles.sheet}>
           <Text style={styles.title}>Configurar temporizador</Text>

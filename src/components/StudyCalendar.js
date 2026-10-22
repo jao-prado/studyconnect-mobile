@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
@@ -14,9 +15,9 @@ export function StudyCalendar({ year, month, history, selectedDateKey, onSelectD
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Mês anterior" onPress={onPreviousMonth} style={styles.arrowButton}><Text style={styles.arrow}>‹</Text></Pressable>
+        <Pressable accessibilityLabel="Mês anterior" accessibilityRole="button" onPress={onPreviousMonth} style={styles.arrowButton}><Ionicons color={colors.text} name="chevron-back" size={19} /></Pressable>
         <Text style={styles.month}>{MONTHS[month]} {year}</Text>
-        <Pressable accessibilityLabel="Próximo mês" onPress={onNextMonth} style={styles.arrowButton}><Text style={styles.arrow}>›</Text></Pressable>
+        <Pressable accessibilityLabel="Próximo mês" accessibilityRole="button" onPress={onNextMonth} style={styles.arrowButton}><Ionicons color={colors.text} name="chevron-forward" size={19} /></Pressable>
       </View>
       <View style={styles.grid}>
         {WEEKDAYS.map((label, index) => <View key={`${label}-${index}`} style={styles.cell}><Text style={styles.weekday}>{label}</Text></View>)}
@@ -25,6 +26,8 @@ export function StudyCalendar({ year, month, history, selectedDateKey, onSelectD
             {cell ? (
               <Pressable
                 accessibilityLabel={`${cell.day}, ${cell.sessions} sessões, ${Math.floor(cell.seconds / 60)} minutos`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: cell.dateKey === selectedDateKey }}
                 onPress={() => onSelectDate(cell.dateKey)}
                 style={[
                   styles.day,
@@ -45,21 +48,19 @@ export function StudyCalendar({ year, month, history, selectedDateKey, onSelectD
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 22, padding: 15 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 },
-  month: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  arrowButton: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: colors.surfaceRaised },
-  arrow: { color: colors.text, fontSize: 28, lineHeight: 30 },
+  card: { backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 17, padding: 13 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+  month: { color: colors.text, fontSize: 15, fontWeight: '700' },
+  arrowButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: colors.surfaceRaised },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: `${100 / 7}%`, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
-  weekday: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
-  day: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  weekday: { color: colors.textMuted, fontSize: 10, fontWeight: '700' },
+  day: { width: 42, height: 42, maxWidth: '100%', borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   activeDay: { backgroundColor: colors.primarySoft },
   today: { borderWidth: 1, borderColor: '#A78BFA' },
   selectedDay: { backgroundColor: colors.primary },
   dayText: { color: colors.textMuted, fontSize: 13, fontWeight: '600' },
-  activeDayText: { color: '#DDD6FE', fontWeight: '800' },
+  activeDayText: { color: colors.primaryText, fontWeight: '700' },
   selectedDayText: { color: colors.white },
-  activityDot: { position: 'absolute', bottom: 3, width: 3, height: 3, borderRadius: 2, backgroundColor: '#C4B5FD' },
+  activityDot: { position: 'absolute', bottom: 3, width: 3, height: 3, borderRadius: 2, backgroundColor: colors.primaryText },
 });
-

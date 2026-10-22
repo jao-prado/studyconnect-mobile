@@ -1,16 +1,27 @@
 import { useRef, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { AuthScreen, authStyles } from '../../components/AuthScreen';
+import { FeedbackMessage } from '../../components/FeedbackMessage';
 import { FormInput } from '../../components/FormInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import { registerStudent } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/tokens';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+const PASSWORD_RULES = [
+  { label: '8 ou mais caracteres', test: (value) => value.length >= 8 },
+  { label: 'Uma letra maiúscula', test: (value) => /[A-Z]/.test(value) },
+  { label: 'Uma letra minúscula', test: (value) => /[a-z]/.test(value) },
+  { label: 'Um número', test: (value) => /\d/.test(value) },
+  { label: 'Um símbolo', test: (value) => /[^A-Za-z0-9]/.test(value) },
+];
 
 export default function CadastroScreen() {
+  const { register } = useAuth();
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmationRef = useRef(null);
@@ -22,6 +33,7 @@ export default function CadastroScreen() {
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: null }));
+    setMessage('');
   }
 
   async function handleRegister() {
@@ -44,7 +56,7 @@ export default function CadastroScreen() {
 
     setLoading(true);
     try {
-      await registerStudent(nome, email, form.senha);
+      await register(nome, email, form.senha);
       setForm((current) => ({ ...current, senha: '', confirmacao: '' }));
       router.replace({ pathname: '/verificar-email', params: { email } });
     } catch (error) {
@@ -56,15 +68,44 @@ export default function CadastroScreen() {
   }
 
   return (
-    <AuthScreen eyebrow="NOVA CONTA" title="Comece a estudar" subtitle="Crie uma conta gratuita de aluno.">
-      <FormInput label="Nome" autoCapitalize="words" autoComplete="name" maxLength={45} value={form.nome} error={errors.nome} onChangeText={(value) => update('nome', value)} onSubmitEditing={() => emailRef.current?.focus()} returnKeyType="next" />
-      <FormInput ref={emailRef} label="E-mail" autoCapitalize="none" autoComplete="email" keyboardType="email-address" maxLength={45} value={form.email} error={errors.email} onChangeText={(value) => update('email', value)} onSubmitEditing={() => passwordRef.current?.focus()} returnKeyType="next" />
-      <FormInput ref={passwordRef} label="Senha" autoCapitalize="none" autoComplete="new-password" secureTextEntry value={form.senha} error={errors.senha} onChangeText={(value) => update('senha', value)} onSubmitEditing={() => confirmationRef.current?.focus()} returnKeyType="next" />
-      <Text style={authStyles.hint}>Mínimo de 8 caracteres, com letra maiúscula, minúscula, número e símbolo.</Text>
-      <FormInput ref={confirmationRef} label="Confirmar senha" autoCapitalize="none" autoComplete="new-password" secureTextEntry value={form.confirmacao} error={errors.confirmacao} onChangeText={(value) => update('confirmacao', value)} onSubmitEditing={handleRegister} returnKeyType="done" />
-      {message ? <Text accessibilityRole="alert" style={[authStyles.message, authStyles.error]}>{message}</Text> : null}
+    <AuthScreen eyebrow="Conta de estudante" title="Crie sua conta" subtitle="Comece sua jornada no StudyConnect.">
+      <FormInput label="Nome" autoCapitalize="words" autoComplete="name" maxLength={45} placeholder="Como podemos chamar você?" value={form.nome} error={errors.nome} onChangeText={(value) => update('nome', value)} onSubmitEditing={() => emailRef.current?.focus()} returnKeyType="next" />
+      <FormInput ref={emailRef} label="E-mail" autoCapitalize="none" autoComplete="email" autoCorrect={false} keyboardType="email-address" maxLength={45} placeholder="seu@email.com" value={form.email} error={errors.email} onChangeText={(value) => update('email', value)} onSubmitEditing={() => passwordRef.current?.focus()} returnKeyType="next" />
+      <View style={styles.passwordGroup}>
+        <FormInput ref={passwordRef} label="Senha" autoCapitalize="none" autoComplete="new-password" placeholder="Crie uma senha segura" secureTextEntry value={form.senha} error={errors.senha} onChangeText={(value) => update('senha', value)} onSubmitEditing={() => confirmationRef.current?.focus()} returnKeyType="next" />
+        <Text style={styles.rulesTitle}>A senha deve conter:</Text>
+        <View style={styles.rules}>
+          {PASSWORD_RULES.map((rule) => {
+            const met = rule.test(form.senha);
+            return (
+              <View key={rule.label} style={styles.ruleRow}>
+                <View style={[styles.ruleDot, met ? styles.ruleDotMet : null]} />
+                <Text accessibilityLabel={`${met ? 'Atendido' : 'Pendente'}: ${rule.label}`} style={[styles.ruleText, met ? styles.ruleTextMet : null]}>{rule.label}</Text>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+      <FormInput ref={confirmationRef} label="Confirmar senha" autoCapitalize="none" autoComplete="new-password" placeholder="Digite a senha novamente" secureTextEntry value={form.confirmacao} error={errors.confirmacao} onChangeText={(value) => update('confirmacao', value)} onSubmitEditing={handleRegister} returnKeyType="done" />
+      <FeedbackMessage>{message}</FeedbackMessage>
       <PrimaryButton title="Criar conta" loading={loading} onPress={handleRegister} />
-      <Pressable disabled={loading} onPress={() => router.back()}><Text style={authStyles.link}>Já tenho uma conta</Text></Pressable>
+      <Pressable accessibilityRole="button" accessibilityState={{ disabled: loading }} disabled={loading} onPress={() => router.replace('/login')} style={authStyles.linkButton}>
+        <Text style={authStyles.link}>
+          <Text style={authStyles.linkPrefix}>Já tem uma conta? </Text>
+          Entrar
+        </Text>
+      </Pressable>
     </AuthScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  passwordGroup: { gap: spacing.md },
+  rulesTitle: { color: colors.textSecondary, fontSize: 12, lineHeight: 17, fontWeight: '600' },
+  rules: { gap: spacing.xs },
+  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  ruleDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.borderStrong },
+  ruleDotMet: { backgroundColor: colors.success },
+  ruleText: { flex: 1, color: colors.textMuted, fontSize: 12, lineHeight: 17 },
+  ruleTextMet: { color: colors.success },
+});

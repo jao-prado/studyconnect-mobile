@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
@@ -41,14 +42,14 @@ export function TrilhaCard({ trilha, matriculado, onPress, progresso }) {
           <Text style={styles.metaLabel}>Professor</Text>
           <Text numberOfLines={1} style={styles.metaValue}>{fallback(trilha.professorNome, 'Não informado')}</Text>
         </View>
-        <Text style={styles.arrow}>›</Text>
+        <Ionicons color="#B9A5E8" name="chevron-forward" size={18} />
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 18, gap: 12 },
+  card: { backgroundColor: colors.surfaceSubtle, borderWidth: 1, borderColor: colors.border, borderRadius: 18, padding: 15, gap: 9 },
   pressed: { opacity: 0.78, transform: [{ scale: 0.995 }] },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   subjectBadge: { maxWidth: '48%', backgroundColor: colors.primarySoft, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
@@ -56,12 +57,11 @@ const styles = StyleSheet.create({
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   privateText: { color: colors.textMuted, fontSize: 12, fontWeight: '600' },
   enrolledText: { color: '#86EFAC', fontSize: 12, fontWeight: '700' },
-  title: { color: colors.text, fontSize: 20, lineHeight: 26, fontWeight: '800' },
-  description: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
-  footer: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 13, gap: 16 },
+  title: { color: colors.text, fontSize: 16, lineHeight: 22, fontWeight: '700' },
+  description: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
+  footer: { flexDirection: 'row', alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, paddingTop: 10, gap: 12 },
   meta: { maxWidth: '30%' },
   professor: { flex: 1, maxWidth: 'none' },
-  metaLabel: { color: colors.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 },
-  metaValue: { color: colors.text, fontSize: 13, fontWeight: '600', marginTop: 2 },
-  arrow: { color: '#C4B5FD', fontSize: 28, lineHeight: 28 },
+  metaLabel: { color: colors.textMuted, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.4 },
+  metaValue: { color: colors.textSecondary, fontSize: 12, fontWeight: '500', marginTop: 2 },
 });

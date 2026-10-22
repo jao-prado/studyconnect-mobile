@@ -4,10 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import { ProgressoProvider } from '../../context/ProgressoContext';
 import { StudyModeProvider } from '../../context/StudyModeContext';
 import { TrilhasProvider } from '../../context/TrilhasContext';
+import { authenticatedLandingPath, unauthenticatedLandingPath } from '../../utils/authNavigation';
 
 export default function AppLayout() {
-  const { user } = useAuth();
-  if (!user) return <Redirect href="/login" />;
+  const { user, accountDeleted, onboardingPending } = useAuth();
+  if (!user) return <Redirect href={unauthenticatedLandingPath(accountDeleted)} />;
+  if (onboardingPending) return <Redirect href={authenticatedLandingPath(onboardingPending)} />;
 
   return (
     <TrilhasProvider>

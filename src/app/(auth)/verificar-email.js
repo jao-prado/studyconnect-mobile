@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { AuthScreen, authStyles } from '../../components/AuthScreen';
-import { FormInput } from '../../components/FormInput';
+import { FeedbackMessage } from '../../components/FeedbackMessage';
+import { CodeInput } from '../../components/FormInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import { resendVerification, verifyEmail } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import { resendVerification } from '../../services/authService';
 
 export default function VerificarEmailScreen() {
+  const { completeSignupVerification } = useAuth();
   const params = useLocalSearchParams();
   const email = typeof params.email === 'string' ? params.email.trim().toLowerCase() : '';
   const [code, setCode] = useState('');
@@ -19,16 +22,33 @@ export default function VerificarEmailScreen() {
 
   async function handleVerify() {
     if (loading || resending) return;
-    if (!email) return setMessage('Volte ao cadastro e informe seu e-mail novamente.');
-    if (!/^\d{6}$/.test(code)) return setMessage('Informe o código de 6 dígitos recebido por e-mail.');
+    if (!email) {
+      setMessageKind('error');
+      setMessage('Volte ao cadastro e informe seu e-mail novamente.');
+      return;
+    }
+    if (!/^\d{6}$/.test(code)) {
+      setMessageKind('error');
+      setMessage('Informe o código de 6 dígitos recebido por e-mail.');
+      return;
+    }
     setLoading(true);
     setMessage('');
     try {
-      const result = await verifyEmail(email, code);
+      const result = await completeSignupVerification(email, code);
       setCode('');
+      if (result.mfaRequired) {
+        router.replace('/mfa');
+        return;
+      }
       setSuccess(true);
       setMessageKind('success');
-      setMessage(result?.message || 'E-mail verificado com sucesso.');
+      if (result.verificationOnly) {
+        setMessage(result.message || 'E-mail confirmado. Entre para continuar.');
+      } else {
+        setMessage('E-mail confirmado. Preparando sua apresentação.');
+        router.replace('/home');
+      }
     } catch (error) {
       setMessageKind('error');
       setMessage(error.message || 'Código incorreto ou expirado.');
@@ -54,12 +74,18 @@ export default function VerificarEmailScreen() {
   }
 
   return (
-    <AuthScreen eyebrow="CONFIRMAÇÃO" title="Verifique seu e-mail" subtitle={email ? `Enviamos um código para ${email}.` : 'Informe o código enviado ao seu e-mail.'}>
-      {!success ? <FormInput label="Código de verificação" autoCapitalize="none" autoComplete="one-time-code" keyboardType="number-pad" maxLength={6} value={code} error={message && !success ? message : null} onChangeText={(value) => { setCode(value.replace(/\D/g, '')); setMessage(''); }} onSubmitEditing={handleVerify} returnKeyType="done" /> : null}
-      {message ? <Text accessibilityRole="alert" style={[authStyles.message, messageKind === 'success' ? authStyles.success : authStyles.error]}>{message}</Text> : null}
+    <AuthScreen backTo="/cadastro" centered eyebrow="Confirmação de e-mail" icon={success ? 'checkmark-circle-outline' : 'mail-outline'} title={success ? 'E-mail confirmado' : 'Verifique seu e-mail'} subtitle={success ? 'Sua conta está pronta para acessar.' : 'Digite o código de seis dígitos enviado para sua caixa de entrada.'}>
+      {!success && email ? (
+        <View style={[authStyles.context, authStyles.contextCentered]}>
+          <Text style={authStyles.contextLabel}>Código enviado para</Text>
+          <Text selectable style={[authStyles.contextValue, authStyles.contextValueCentered]}>{email}</Text>
+        </View>
+      ) : null}
+      {!success ? <CodeInput editable={!loading && !resending} label="Código de verificação" invalid={messageKind === 'error' && Boolean(message)} value={code} onChangeText={(value) => { setCode(value); setMessage(''); }} onSubmitEditing={handleVerify} returnKeyType="done" /> : null}
+      <FeedbackMessage kind={messageKind}>{message}</FeedbackMessage>
       {!success ? <PrimaryButton title="Verificar e-mail" loading={loading} disabled={resending} onPress={handleVerify} /> : <PrimaryButton title="Ir para o login" onPress={() => router.replace('/login')} />}
-      {!success ? <Pressable disabled={loading || resending || !email} onPress={handleResend}><Text style={authStyles.link}>{resending ? 'Reenviando…' : 'Reenviar código'}</Text></Pressable> : null}
-      {!success ? <Pressable disabled={loading || resending} onPress={() => router.replace('/login')}><Text style={authStyles.link}>Voltar ao login</Text></Pressable> : null}
+      {!success ? <Pressable accessibilityRole="button" accessibilityState={{ busy: resending, disabled: loading || resending || !email }} disabled={loading || resending || !email} onPress={handleResend} style={authStyles.linkButton}><Text style={authStyles.link}>{resending ? 'Reenviando…' : 'Não recebeu? Reenviar código'}</Text></Pressable> : null}
+      {!success ? <Pressable accessibilityRole="button" accessibilityState={{ disabled: loading || resending }} disabled={loading || resending} onPress={() => router.replace('/login')} style={authStyles.linkButton}><Text style={authStyles.link}><Text style={authStyles.linkPrefix}>Já confirmou? </Text>Entrar</Text></Pressable> : null}
     </AuthScreen>
   );
 }
